@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/faralam/go-contacts/utils"
+	"github.com/farzamalam/go-employee-details/utils"
 )
 
 type Employee struct {
@@ -34,16 +34,44 @@ func (employee *Employee) Create() map[string]interface{} {
 		return resp
 	}
 	GetDB().Create(employee)
+
 	resp["employee"] = employee
 	return resp
 }
 
 func GetEmployees() []*Employee {
 	employees := make([]*Employee, 0)
-	err := GetDB().Table("employee").Find(&employees).Error
+	err := GetDB().Table("employees").Find(&employees).Error
 	if err != nil {
 		return nil
-		fmt.Println("Error while calling the employee table")
+		fmt.Println("Error while calling the employee table", err)
 	}
 	return employees
+}
+
+func GetEmployee(id int) *Employee {
+	employee := &Employee{}
+	err := GetDB().Table("employees").First(employee).Error
+	if err != nil {
+		return nil
+		fmt.Println("Error in GetEmployee():", err)
+	}
+	return employee
+}
+
+func (employee *Employee) UpdateEmployee(id int) *Employee {
+
+	if id != employee.ID {
+		return nil
+	}
+	GetDB().Table("employees").First(&employee)
+	GetDB().Table("employees").Save(&employee)
+	return employee
+}
+func DeleteEmployee(id int) bool {
+	if id < 1 {
+		return false
+	}
+	GetDB().Table("employees").Delete(id)
+	return true
 }
