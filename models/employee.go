@@ -51,7 +51,7 @@ func GetEmployees() []*Employee {
 
 func GetEmployee(id int) *Employee {
 	employee := &Employee{}
-	err := GetDB().Table("employees").First(employee).Error
+	err := GetDB().Table("employees").Where("id = ?", id).First(employee).Error
 	if err != nil {
 		return nil
 		fmt.Println("Error in GetEmployee():", err)
@@ -72,6 +72,8 @@ func DeleteEmployee(id int) bool {
 	if id < 1 {
 		return false
 	}
-	GetDB().Table("employees").Delete(id)
+	employee := Employee{}
+	GetDB().Table("employees").Where("id = ?", id).First(&employee)
+	GetDB().Table("employees").Delete(&employee)
 	return true
 }
